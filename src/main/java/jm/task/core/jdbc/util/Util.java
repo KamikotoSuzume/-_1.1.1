@@ -9,8 +9,12 @@ public class Util {
     private String root = "root";
     private String password = "kamikotosUzUme19993573547";
 
-    public Connection setting() throws SQLException {
-        return DriverManager.getConnection(this.url, this.root, this.password);
+    public Connection setting() {
+        try {
+            return DriverManager.getConnection(this.url, this.root, this.password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

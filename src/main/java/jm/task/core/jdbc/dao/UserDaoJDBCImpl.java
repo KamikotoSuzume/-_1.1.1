@@ -13,15 +13,15 @@ import java.util.List;
 public class UserDaoJDBCImpl implements UserDao {
 
     private Util util = new Util();
-    static long count = 1;
     public UserDaoJDBCImpl() {
 
     }
 
+    @Override
     public void createUsersTable() {
         try (Connection connection = util.setting();
              PreparedStatement statement = connection.prepareStatement(
-                     "CREATE TABLE IF NOT EXISTS Users (id BIGINT PRIMARY KEY, name VARCHAR (100)," +
+                     "CREATE TABLE IF NOT EXISTS Users (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR (100)," +
                             "lastName VARCHAR(100), age TINYINT)"))
         {
             statement.executeUpdate();
@@ -30,34 +30,37 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void dropUsersTable() {
         try (Connection connection = util.setting();
              PreparedStatement statement = connection.prepareStatement(
                      "DROP TABLE IF EXISTS Users"))
         {
             statement.executeUpdate();
-            count = 1;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
+    @Override
     public void saveUser(String name, String lastName, byte age) {
         try (Connection connection = util.setting();
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO Users(id, name, lastName, age) VALUES(?, ?, ?, ?)"))
+                     "INSERT INTO Users(name, lastName, age) VALUES(?, ?, ?)"))
         {
-            statement.setLong(1, count++);
-            statement.setString(2, name);
-            statement.setString(3, lastName);
-            statement.setByte(4, age);
+
+            statement.setString(1, name);
+            statement.setString(2, lastName);
+            statement.setByte(3, age);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public void removeUserById(long id) {
         try (Connection connection = util.setting();
              PreparedStatement statement = connection.prepareStatement(
@@ -71,6 +74,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try (Connection connection = util.setting();
@@ -89,13 +93,14 @@ public class UserDaoJDBCImpl implements UserDao {
         return users;
     }
 
+    @Override
     public void cleanUsersTable() {
         try (Connection connection = util.setting();
              PreparedStatement statement = connection.prepareStatement(
                      "TRUNCATE TABLE Users"))
         {
             statement.executeUpdate();
-            count = 1;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
